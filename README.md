@@ -1,32 +1,169 @@
-# By the Book - Studio Booking Platform
+<div align="center">
+  <img src="public/images/logo.png" alt="By the Book Logo" width="120" />
 
-A comprehensive recording and production studio booking application designed to streamline studio operations, eliminate scheduling conflicts, and enhance client experience.
+  <h1>By the Book</h1>
+  <p><strong>The world-class studio scheduling & management platform for modern recording studios.</strong></p>
 
-## 🎯 Features
+[![Live Demo](https://img.shields.io/badge/Live%20Demo-GitHub%20Pages-6366f1?style=for-the-badge&logo=github)](https://debalent.github.io/By-The-Book/)
+[![GitHub](https://img.shields.io/badge/GitHub-Debalent%2FBy--The--Book-black?style=for-the-badge&logo=github)](https://github.com/Debalent/By-The-Book)
+[![TypeScript](https://img.shields.io/badge/TypeScript-5.x-3178c6?style=for-the-badge&logo=typescript)](https://www.typescriptlang.org/)
+[![Next.js](https://img.shields.io/badge/Next.js-14-black?style=for-the-badge&logo=nextdotjs)](https://nextjs.org/)
+[![Stripe](https://img.shields.io/badge/Payments-Stripe-635BFF?style=for-the-badge&logo=stripe)](https://stripe.com/)
 
-### For Studio Owners
-- **Smart Scheduling System**: AI-powered conflict detection and automatic buffer time management
-- **Real-time Availability Management**: Set operating hours and manage multiple rooms/spaces
-- **Payment Processing**: Integrated Stripe payments with deposit and final payment support
-- **Client Management**: Track client history, notes, and booking patterns
-- **Revenue Analytics**: Comprehensive dashboard with revenue tracking and booking statistics
-- **Cancellation Policies**: Automated cancellation fee calculation based on notice period
-- **Review System**: Collect and display client feedback
+</div>
 
-### For Clients
-- **Easy Booking Flow**: Simple 4-step booking process
-- **Real-time Availability**: See available time slots instantly
-- **Flexible Duration Options**: Book sessions from 1 hour to full-day
-- **Secure Payments**: PCI-compliant payment processing via Stripe
-- **Session Reminders**: Automated email notifications (configurable)
-- **Review & Feedback**: Leave reviews after completed sessions
+---
 
-### Smart Scheduling Features
-- **Conflict Prevention**: Automatic detection of double-bookings
-- **Buffer Time Management**: Configurable buffer time between sessions
-- **Multi-room Support**: Manage multiple spaces independently
-- **Operating Hours**: Set availability by day of week
-- **Timezone Support**: Proper handling of different timezones
+## Overview
+
+**By the Book** is a full-stack SaaS platform that replaces the patchwork of spreadsheets, texts, and manual invoices that studio operators currently rely on. From online booking and Stripe deposits to real-time analytics and an AI session predictor — everything runs in one beautiful, Electric Indigo-themed interface.
+
+---
+
+## Key Features
+
+| Feature                     | Description                                                               |
+| --------------------------- | ------------------------------------------------------------------------- |
+| 🗓️ **Smart Calendar**       | Weekly/monthly view with color-coded rooms and real-time availability     |
+| 💳 **Stripe Payments**      | Automated deposits, balance charges, invoices, and refunds                |
+| 👥 **Client CRM**           | Full client profiles with session history, total spend, and notes         |
+| 📊 **Analytics & Heatmaps** | Revenue trends, room utilization heatmaps, peak-hour analysis             |
+| 🏠 **Room Management**      | Track rates, equipment, capacity, and maintenance per room                |
+| 🔧 **Equipment Inventory**  | Asset tracking with category filters, value summary, and condition status |
+| 🤖 **AI Session Predictor** | Predict session duration by genre, experience level, and crew size        |
+| 🌍 **Studio Marketplace**   | List your studio for discovery; clients can browse and book directly      |
+| ⚙️ **Settings**             | Studio profile, business hours, notification preferences, Stripe config   |
+
+---
+
+## Workflow
+
+```text
+1. Client discovers studio via marketplace or direct link
+2. Client selects room, date, and time slot
+3. AI suggests optimal session duration
+4. Stripe collects deposit automatically
+5. Automated reminders sent 24h before session
+6. Balance charged → invoice sent → client added to CRM
+7. Dashboard analytics update in real-time
+```
+
+---
+
+## Tech Stack
+
+| Layer        | Technology                                                    |
+| ------------ | ------------------------------------------------------------- |
+| **Frontend** | Next.js 14, TypeScript, Tailwind CSS, Recharts, Framer Motion |
+| **API**      | tRPC v10 (type-safe end-to-end)                               |
+| **Database** | PostgreSQL + Prisma ORM                                       |
+| **Payments** | Stripe + Stripe Elements                                      |
+| **Auth**     | NextAuth.js v4                                                |
+| **Security** | Zod validation, rate limiting, CSRF protection                |
+| **Fonts**    | Space Grotesk (headings) + Inter (body)                       |
+
+---
+
+## Design System
+
+| Token         | Name            | Hex       |
+| ------------- | --------------- | --------- |
+| `primary-500` | Electric Indigo | `#6366f1` |
+| `violet-600`  | Studio Purple   | `#7c3aed` |
+| `mint-400`    | Neon Mint       | `#34d399` |
+| `orange-500`  | Studio Orange   | `#f97316` |
+| `night-900`   | Studio Night    | `#0f172a` |
+
+---
+
+## Getting Started
+
+### Prerequisites
+
+- Node.js 18+
+- PostgreSQL database
+- Stripe account
+
+### Installation
+
+```bash
+git clone https://github.com/Debalent/By-The-Book.git
+cd By-The-Book
+npm install
+cp .env.example .env
+# Edit .env with your DATABASE_URL, NEXTAUTH_SECRET, STRIPE_SECRET_KEY, etc.
+npx prisma migrate dev
+npm run dev
+```
+
+Open <http://localhost:3000> in your browser.
+
+### Environment Variables
+
+```env
+DATABASE_URL="postgresql://..."
+NEXTAUTH_SECRET="your-secret"
+NEXTAUTH_URL="http://localhost:3000"
+STRIPE_SECRET_KEY="sk_test_..."
+NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY="pk_test_..."
+STRIPE_WEBHOOK_SECRET="whsec_..."
+```
+
+---
+
+## Project Structure
+
+```text
+src/
+├── pages/
+│   ├── index.tsx              # Landing page
+│   ├── book.tsx               # Public booking wizard
+│   ├── studio/
+│   │   ├── dashboard.tsx      # Main operator dashboard
+│   │   ├── calendar.tsx       # Weekly calendar view
+│   │   ├── rooms.tsx          # Room management
+│   │   ├── clients.tsx        # Client CRM
+│   │   ├── analytics.tsx      # Analytics & heatmaps
+│   │   ├── equipment.tsx      # Equipment inventory
+│   │   ├── payments.tsx       # Payment transactions
+│   │   ├── marketplace.tsx    # Studio discovery
+│   │   ├── ai-predict.tsx     # AI session predictor
+│   │   └── settings.tsx       # Studio settings
+│   └── api/trpc/[trpc].ts
+├── components/
+│   └── Layout.tsx             # Sidebar + topbar layout
+├── server/api/routers/        # tRPC routers
+└── styles/globals.css         # Design tokens & component classes
+```
+
+---
+
+## Live Demo
+
+View the GitHub Pages static demo: <https://debalent.github.io/By-The-Book/>
+
+---
+
+## Deployment
+
+Recommended: **Vercel** — import the repo, add environment variables, deploy.
+
+Also supported: Railway, Render, AWS, DigitalOcean.
+
+Database providers: Supabase, Railway, Neon, AWS RDS.
+
+---
+
+## Contact
+
+**Balentine Tech Solutions**
+
+- Email: <balentinetechsolutions@gmail.com>
+- GitHub: <https://github.com/Debalent>
+
+---
+
+_Built with ❤️ by Balentine Tech Solutions · © 2026_
 
 ## 🛠️ Tech Stack
 
@@ -40,7 +177,7 @@ A comprehensive recording and production studio booking application designed to 
 
 ## 📋 Prerequisites
 
-- Node.js 18+ 
+- Node.js 18+
 - PostgreSQL database
 - Stripe account (for payments)
 - npm or yarn
@@ -63,6 +200,7 @@ cp .env.example .env
 ```
 
 Update the `DATABASE_URL` in `.env`:
+
 ```
 DATABASE_URL="postgresql://username:password@localhost:5432/bythebook"
 ```
@@ -173,6 +311,7 @@ src/
 ## 🎨 Key Pages
 
 ### Client-Facing
+
 - `/` - Landing page with features
 - `/book` - Multi-step booking flow
 - `/booking/[id]/payment` - Stripe payment page
@@ -180,11 +319,13 @@ src/
 - `/booking/[id]/review` - Leave a review
 
 ### Studio Management
+
 - `/studio/dashboard` - Main dashboard with stats and bookings
 
 ## 🔧 API Routes (tRPC)
 
 ### Studio Router
+
 - `getAll` - Get all studios
 - `getById` - Get studio details
 - `create` - Create new studio
@@ -193,6 +334,7 @@ src/
 - `getStats` - Get studio statistics
 
 ### Booking Router
+
 - `getAvailableSlots` - Get available time slots (smart scheduling)
 - `create` - Create new booking
 - `getByStudio` - Get studio bookings
@@ -200,11 +342,13 @@ src/
 - `cancel` - Cancel booking with fee calculation
 
 ### Client Router
+
 - `getOrCreate` - Get or create client
 - `getBookings` - Get client booking history
 - `submitReview` - Submit review
 
 ### Payment Router
+
 - `createPaymentIntent` - Create Stripe payment intent
 - `confirmPayment` - Confirm successful payment
 - `getByBooking` - Get payment history
@@ -275,6 +419,7 @@ The booking system includes intelligent conflict detection:
 ### Other Platforms
 
 The app can be deployed to any platform supporting Next.js:
+
 - Railway
 - Render
 - AWS
@@ -282,6 +427,7 @@ The app can be deployed to any platform supporting Next.js:
 - Heroku
 
 **Database**: Ensure PostgreSQL is available. Recommended providers:
+
 - Supabase
 - Railway
 - Neon

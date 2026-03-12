@@ -1,253 +1,400 @@
-import { useState } from 'react'
 import Head from 'next/head'
-import { api } from '@/utils/api'
-import { format } from 'date-fns'
-import { Calendar, DollarSign, Users, Star, TrendingUp, Clock } from 'lucide-react'
+import Link from 'next/link'
+import {
+  Calendar,
+  DollarSign,
+  Users,
+  Star,
+  Clock,
+  TrendingUp,
+  ArrowUpRight,
+  Mic2,
+  Camera,
+  Radio,
+  Tv2,
+  CheckCircle2,
+  AlertCircle,
+  XCircle,
+} from 'lucide-react'
+import {
+  AreaChart,
+  Area,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  ResponsiveContainer,
+} from 'recharts'
 
-export default function StudioDashboard() {
-  // For demo purposes, using a hardcoded studio ID
-  // In production, this would come from authentication
-  const [selectedStudioId, setSelectedStudioId] = useState<string>('')
+// ── Demo data ──────────────────────────────────────────────
+const REVENUE_DATA = [
+  { month: 'Sep', revenue: 4200, bookings: 18 },
+  { month: 'Oct', revenue: 5800, bookings: 23 },
+  { month: 'Nov', revenue: 5100, bookings: 20 },
+  { month: 'Dec', revenue: 7400, bookings: 31 },
+  { month: 'Jan', revenue: 6900, bookings: 28 },
+  { month: 'Feb', revenue: 8300, bookings: 35 },
+  { month: 'Mar', revenue: 9100, bookings: 39 },
+]
 
-  const { data: studios } = api.studio.getAll.useQuery()
-  const { data: studio } = api.studio.getById.useQuery(
-    { id: selectedStudioId },
-    { enabled: !!selectedStudioId }
-  )
-  const { data: stats } = api.studio.getStats.useQuery(
-    { studioId: selectedStudioId },
-    { enabled: !!selectedStudioId }
-  )
-  const { data: bookings } = api.booking.getByStudio.useQuery(
-    { studioId: selectedStudioId },
-    { enabled: !!selectedStudioId }
-  )
+const TODAY_BOOKINGS = [
+  {
+    id: '1',
+    client: 'Marcus Webb',
+    room: 'Studio A',
+    time: '9:00 AM',
+    duration: '3h',
+    status: 'CONFIRMED',
+    amount: 450,
+    avatar: 'MW',
+  },
+  {
+    id: '2',
+    client: 'Layla Rivers',
+    room: 'Podcast Room',
+    time: '11:00 AM',
+    duration: '2h',
+    status: 'IN_PROGRESS',
+    amount: 180,
+    avatar: 'LR',
+  },
+  {
+    id: '3',
+    client: 'Jordan Park',
+    room: 'Vocal Booth',
+    time: '1:00 PM',
+    duration: '2h',
+    status: 'CONFIRMED',
+    amount: 200,
+    avatar: 'JP',
+  },
+  {
+    id: '4',
+    client: 'Nadia Flores',
+    room: 'Photo Studio',
+    time: '3:00 PM',
+    duration: '4h',
+    status: 'PENDING',
+    amount: 360,
+    avatar: 'NF',
+  },
+  {
+    id: '5',
+    client: 'Devon Cross',
+    room: 'Studio A',
+    time: '6:00 PM',
+    duration: '3h',
+    status: 'CONFIRMED',
+    amount: 450,
+    avatar: 'DC',
+  },
+]
 
-  // Select first studio by default
-  if (!selectedStudioId && studios && studios.length > 0) {
-    setSelectedStudioId(studios[0]!.id)
-  }
+const ROOMS = [
+  { name: 'Studio A', icon: Mic2, rate: 150, booked: 85, color: 'from-primary-500 to-violet-600' },
+  {
+    name: 'Vocal Booth',
+    icon: Radio,
+    rate: 100,
+    booked: 62,
+    color: 'from-mint-500 to-primary-500',
+  },
+  {
+    name: 'Podcast Room',
+    icon: Radio,
+    rate: 90,
+    booked: 70,
+    color: 'from-orange-400 to-orange-600',
+  },
+  {
+    name: 'Photo Studio',
+    icon: Camera,
+    rate: 90,
+    booked: 45,
+    color: 'from-violet-400 to-violet-600',
+  },
+  { name: 'Editing Suite', icon: Tv2, rate: 75, booked: 38, color: 'from-night-400 to-night-600' },
+]
 
+const RECENT_CLIENTS = [
+  { name: 'Marcus Webb', sessions: 12, spend: 5400, avatar: 'MW' },
+  { name: 'Layla Rivers', sessions: 8, spend: 2800, avatar: 'LR' },
+  { name: 'Jordan Park', sessions: 6, spend: 1800, avatar: 'JP' },
+  { name: 'Nadia Flores', sessions: 5, spend: 2200, avatar: 'NF' },
+]
+
+function statusBadge(status: string) {
+  if (status === 'CONFIRMED') return <span className="badge-confirmed">Confirmed</span>
+  if (status === 'IN_PROGRESS') return <span className="badge-progress">In Progress</span>
+  if (status === 'PENDING') return <span className="badge-pending">Pending</span>
+  if (status === 'CANCELLED') return <span className="badge-cancelled">Cancelled</span>
+  return <span className="badge-completed">Completed</span>
+}
+
+export default function Dashboard() {
   return (
     <>
       <Head>
-        <title>Studio Dashboard - By the Book</title>
+        <title>Dashboard — By the Book</title>
       </Head>
 
-      <div className="min-h-screen bg-gray-50">
-        {/* Header */}
-        <div className="bg-white shadow">
-          <div className="container mx-auto px-4 py-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <h1 className="text-3xl font-bold text-gray-900">Studio Dashboard</h1>
-                {studio && <p className="text-gray-600 mt-1">{studio.name}</p>}
+      <div className="p-6 md:p-8 space-y-8 animate-fade-in">
+        {/* Page header */}
+        <div className="flex items-center justify-between">
+          <div>
+            <h1 className="page-title">Good morning, SoundForge 👋</h1>
+            <p className="text-night-500 text-sm mt-1">
+              Here's what's happening at your studio today.
+            </p>
+          </div>
+          <Link href="/book" className="btn-primary hidden md:inline-flex">
+            + New Booking
+          </Link>
+        </div>
+
+        {/* KPI Cards */}
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+          {[
+            {
+              label: "Today's Revenue",
+              value: '$1,640',
+              trend: '+18% vs yesterday',
+              up: true,
+              icon: DollarSign,
+              color: 'text-mint-500',
+            },
+            {
+              label: "Today's Bookings",
+              value: '5',
+              trend: '3 confirmed · 1 live',
+              up: true,
+              icon: Calendar,
+              color: 'text-primary-500',
+            },
+            {
+              label: 'Available Rooms',
+              value: '2 / 5',
+              trend: 'Right now',
+              up: null,
+              icon: Clock,
+              color: 'text-orange-500',
+            },
+            {
+              label: 'Monthly Revenue',
+              value: '$9,100',
+              trend: '+10% vs last month',
+              up: true,
+              icon: TrendingUp,
+              color: 'text-violet-500',
+            },
+          ].map((k) => (
+            <div key={k.label} className="stat-card">
+              <div className="flex items-center justify-between">
+                <span className="stat-label">{k.label}</span>
+                <k.icon size={18} className={k.color} />
               </div>
-              
-              {studios && studios.length > 1 && (
-                <select
-                  value={selectedStudioId}
-                  onChange={(e) => setSelectedStudioId(e.target.value)}
-                  className="px-4 py-2 border rounded-lg"
-                >
-                  {studios.map((s) => (
-                    <option key={s.id} value={s.id}>
-                      {s.name}
-                    </option>
-                  ))}
-                </select>
+              <span className="stat-value">{k.value}</span>
+              {k.up === true && (
+                <span className="stat-trend-up">
+                  <ArrowUpRight size={12} />
+                  {k.trend}
+                </span>
               )}
+              {k.up === null && <span className="text-xs text-night-400 mt-1">{k.trend}</span>}
+            </div>
+          ))}
+        </div>
+
+        {/* Revenue chart + rooms */}
+        <div className="grid lg:grid-cols-3 gap-6">
+          <div className="lg:col-span-2 card p-6">
+            <div className="flex items-center justify-between mb-6">
+              <h2 className="section-title">Revenue Overview</h2>
+              <span className="text-xs text-night-400 bg-night-100 px-3 py-1 rounded-full">
+                Last 7 months
+              </span>
+            </div>
+            <ResponsiveContainer width="100%" height={220}>
+              <AreaChart data={REVENUE_DATA} margin={{ top: 5, right: 5, left: -20, bottom: 0 }}>
+                <defs>
+                  <linearGradient id="revenueGrad" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="10%" stopColor="#6366f1" stopOpacity={0.3} />
+                    <stop offset="90%" stopColor="#6366f1" stopOpacity={0} />
+                  </linearGradient>
+                </defs>
+                <CartesianGrid strokeDasharray="3 3" stroke="#f1f5f9" />
+                <XAxis
+                  dataKey="month"
+                  tick={{ fontSize: 12, fill: '#94a3b8' }}
+                  axisLine={false}
+                  tickLine={false}
+                />
+                <YAxis
+                  tick={{ fontSize: 12, fill: '#94a3b8' }}
+                  axisLine={false}
+                  tickLine={false}
+                  tickFormatter={(v) => `$${v / 1000}k`}
+                />
+                <Tooltip
+                  contentStyle={{
+                    background: '#fff',
+                    border: '1px solid #e2e8f0',
+                    borderRadius: 12,
+                    fontSize: 13,
+                  }}
+                  formatter={(v: number) => [`$${v.toLocaleString()}`, 'Revenue']}
+                />
+                <Area
+                  type="monotone"
+                  dataKey="revenue"
+                  stroke="#6366f1"
+                  strokeWidth={2.5}
+                  fill="url(#revenueGrad)"
+                  dot={false}
+                  activeDot={{ r: 5 }}
+                />
+              </AreaChart>
+            </ResponsiveContainer>
+          </div>
+
+          {/* Room utilization */}
+          <div className="card p-6">
+            <h2 className="section-title mb-5">Room Utilization</h2>
+            <div className="space-y-4">
+              {ROOMS.map((r) => (
+                <div key={r.name}>
+                  <div className="flex items-center justify-between mb-1.5">
+                    <div className="flex items-center gap-2">
+                      <div
+                        className={`w-7 h-7 rounded-lg bg-gradient-to-br ${r.color} flex items-center justify-center`}
+                      >
+                        <r.icon size={13} className="text-white" />
+                      </div>
+                      <span className="text-sm font-medium text-night-800">{r.name}</span>
+                    </div>
+                    <span className="text-xs font-semibold text-night-600">{r.booked}%</span>
+                  </div>
+                  <div className="h-2 bg-night-100 rounded-full overflow-hidden">
+                    <div
+                      className={`h-full rounded-full bg-gradient-to-r ${r.color} transition-all duration-700`}
+                      style={{ width: `${r.booked}%` }}
+                    />
+                  </div>
+                </div>
+              ))}
             </div>
           </div>
         </div>
 
-        <div className="container mx-auto px-4 py-8">
-          {/* Stats Grid */}
-          {stats && (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-              <StatCard
-                icon={<Calendar className="text-primary-600" />}
-                title="Total Bookings"
-                value={stats.totalBookings.toString()}
-                trend="+12% this month"
-              />
-              <StatCard
-                icon={<DollarSign className="text-green-600" />}
-                title="Total Revenue"
-                value={`$${stats.totalRevenue.toFixed(0)}`}
-                trend="+8% this month"
-              />
-              <StatCard
-                icon={<Clock className="text-blue-600" />}
-                title="Upcoming Sessions"
-                value={stats.upcomingBookings.toString()}
-                trend="Next 30 days"
-              />
-              <StatCard
-                icon={<Star className="text-yellow-600" />}
-                title="Average Rating"
-                value={stats.avgRating.toFixed(1)}
-                trend="From all reviews"
-              />
+        {/* Today's schedule + top clients */}
+        <div className="grid lg:grid-cols-3 gap-6">
+          {/* Schedule */}
+          <div className="lg:col-span-2 card p-6">
+            <div className="flex items-center justify-between mb-5">
+              <h2 className="section-title">Today's Schedule</h2>
+              <Link
+                href="/studio/calendar"
+                className="text-sm text-primary-600 hover:text-primary-500 font-medium flex items-center gap-1"
+              >
+                View calendar <ArrowUpRight size={14} />
+              </Link>
             </div>
-          )}
-
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-            {/* Upcoming Bookings */}
-            <div className="lg:col-span-2">
-              <div className="bg-white rounded-xl shadow p-6">
-                <h2 className="text-2xl font-bold mb-6">Upcoming Bookings</h2>
-                
-                <div className="space-y-4">
-                  {bookings
-                    ?.filter((b) => new Date(b.startTime) >= new Date())
-                    .slice(0, 10)
-                    .map((booking) => (
-                      <BookingCard key={booking.id} booking={booking} />
-                    ))}
-                  
-                  {bookings?.filter((b) => new Date(b.startTime) >= new Date()).length === 0 && (
-                    <p className="text-gray-500 text-center py-8">No upcoming bookings</p>
-                  )}
-                </div>
-              </div>
-            </div>
-
-            {/* Quick Actions & Info */}
-            <div className="space-y-6">
-              {/* Quick Actions */}
-              <div className="bg-white rounded-xl shadow p-6">
-                <h3 className="text-xl font-bold mb-4">Quick Actions</h3>
-                <div className="space-y-3">
-                  <button className="w-full px-4 py-3 bg-primary-600 text-white rounded-lg hover:bg-primary-700 text-left">
-                    View All Bookings
-                  </button>
-                  <button className="w-full px-4 py-3 border border-gray-300 rounded-lg hover:bg-gray-50 text-left">
-                    Manage Availability
-                  </button>
-                  <button className="w-full px-4 py-3 border border-gray-300 rounded-lg hover:bg-gray-50 text-left">
-                    View Clients
-                  </button>
-                  <button className="w-full px-4 py-3 border border-gray-300 rounded-lg hover:bg-gray-50 text-left">
-                    Studio Settings
-                  </button>
-                </div>
-              </div>
-
-              {/* Recent Reviews */}
-              {studio?.reviews && studio.reviews.length > 0 && (
-                <div className="bg-white rounded-xl shadow p-6">
-                  <h3 className="text-xl font-bold mb-4">Recent Reviews</h3>
-                  <div className="space-y-4">
-                    {studio.reviews.slice(0, 3).map((review) => (
-                      <div key={review.id} className="border-b pb-3 last:border-0">
-                        <div className="flex items-center gap-1 mb-2">
-                          {[...Array(5)].map((_, i) => (
-                            <Star
-                              key={i}
-                              size={16}
-                              className={
-                                i < review.rating
-                                  ? 'fill-yellow-400 text-yellow-400'
-                                  : 'text-gray-300'
-                              }
-                            />
-                          ))}
-                        </div>
-                        <p className="text-sm text-gray-600">{review.comment}</p>
-                        <p className="text-xs text-gray-400 mt-1">
-                          {review.booking.client.name}
-                        </p>
-                      </div>
-                    ))}
+            <div className="space-y-3">
+              {TODAY_BOOKINGS.map((b) => (
+                <div
+                  key={b.id}
+                  className="flex items-center gap-4 p-3 rounded-xl hover:bg-night-50 transition-colors group"
+                >
+                  <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-primary-500 to-violet-600 flex items-center justify-center text-white text-xs font-bold shrink-0">
+                    {b.avatar}
                   </div>
+                  <div className="flex-1 min-w-0">
+                    <p className="font-medium text-night-900 text-sm truncate">{b.client}</p>
+                    <p className="text-xs text-night-500">
+                      {b.room} · {b.duration}
+                    </p>
+                  </div>
+                  <div className="text-right">
+                    <p className="text-sm font-semibold text-night-900">{b.time}</p>
+                    <p className="text-xs text-night-400">${b.amount}</p>
+                  </div>
+                  <div className="shrink-0">{statusBadge(b.status)}</div>
                 </div>
-              )}
+              ))}
             </div>
           </div>
+
+          {/* Top clients */}
+          <div className="card p-6">
+            <div className="flex items-center justify-between mb-5">
+              <h2 className="section-title">Top Clients</h2>
+              <Link
+                href="/studio/clients"
+                className="text-sm text-primary-600 hover:text-primary-500 font-medium flex items-center gap-1"
+              >
+                All <ArrowUpRight size={14} />
+              </Link>
+            </div>
+            <div className="space-y-4">
+              {RECENT_CLIENTS.map((c, i) => (
+                <div key={c.name} className="flex items-center gap-3">
+                  <span className="text-xs font-bold text-night-400 w-4">{i + 1}</span>
+                  <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-violet-500 to-primary-600 flex items-center justify-center text-white text-xs font-bold shrink-0">
+                    {c.avatar}
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <p className="text-sm font-medium text-night-900 truncate">{c.name}</p>
+                    <p className="text-xs text-night-500">{c.sessions} sessions</p>
+                  </div>
+                  <span className="text-sm font-semibold text-night-900">
+                    ${c.spend.toLocaleString()}
+                  </span>
+                </div>
+              ))}
+            </div>
+            <div className="mt-5 pt-4 border-t border-night-100">
+              <div className="flex items-center justify-between text-sm">
+                <span className="text-night-500">Avg. Client Value</span>
+                <span className="font-bold text-primary-600">$3,050</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Quick actions */}
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+          {[
+            {
+              label: 'Manage Rooms',
+              href: '/studio/rooms',
+              color: 'from-primary-500 to-violet-600',
+            },
+            {
+              label: 'View Clients',
+              href: '/studio/clients',
+              color: 'from-mint-500 to-primary-500',
+            },
+            {
+              label: 'Revenue Report',
+              href: '/studio/analytics',
+              color: 'from-orange-400 to-orange-600',
+            },
+            {
+              label: 'Studio Marketplace',
+              href: '/studio/marketplace',
+              color: 'from-violet-500 to-violet-700',
+            },
+          ].map((a) => (
+            <Link
+              key={a.label}
+              href={a.href}
+              className={`p-4 rounded-2xl bg-gradient-to-br ${a.color} text-white font-semibold text-sm text-center hover:opacity-90 transition-opacity shadow-sm`}
+            >
+              {a.label}
+            </Link>
+          ))}
         </div>
       </div>
     </>
-  )
-}
-
-function StatCard({
-  icon,
-  title,
-  value,
-  trend,
-}: {
-  icon: React.ReactNode
-  title: string
-  value: string
-  trend: string
-}) {
-  return (
-    <div className="bg-white rounded-xl shadow p-6">
-      <div className="flex items-center justify-between mb-4">
-        <div className="w-12 h-12 bg-gray-100 rounded-lg flex items-center justify-center">
-          {icon}
-        </div>
-      </div>
-      <h3 className="text-gray-600 text-sm font-medium mb-1">{title}</h3>
-      <p className="text-3xl font-bold mb-2">{value}</p>
-      <p className="text-sm text-gray-500">{trend}</p>
-    </div>
-  )
-}
-
-function BookingCard({ booking }: { booking: any }) {
-  const getStatusColor = (status: string) => {
-    switch (status) {
-      case 'CONFIRMED':
-        return 'bg-green-100 text-green-800'
-      case 'PENDING':
-        return 'bg-yellow-100 text-yellow-800'
-      case 'IN_PROGRESS':
-        return 'bg-blue-100 text-blue-800'
-      case 'COMPLETED':
-        return 'bg-gray-100 text-gray-800'
-      case 'CANCELLED':
-        return 'bg-red-100 text-red-800'
-      default:
-        return 'bg-gray-100 text-gray-800'
-    }
-  }
-
-  return (
-    <div className="border rounded-lg p-4 hover:bg-gray-50 transition-colors">
-      <div className="flex items-start justify-between mb-2">
-        <div>
-          <h4 className="font-semibold">{booking.client.name}</h4>
-          <p className="text-sm text-gray-600">{booking.client.email}</p>
-        </div>
-        <span
-          className={`px-3 py-1 rounded-full text-xs font-medium ${getStatusColor(
-            booking.status
-          )}`}
-        >
-          {booking.status}
-        </span>
-      </div>
-      
-      <div className="flex items-center gap-4 text-sm text-gray-600">
-        <div className="flex items-center gap-1">
-          <Calendar size={16} />
-          <span>{format(new Date(booking.startTime), 'MMM d, yyyy')}</span>
-        </div>
-        <div className="flex items-center gap-1">
-          <Clock size={16} />
-          <span>{format(new Date(booking.startTime), 'h:mm a')}</span>
-        </div>
-        <div className="flex items-center gap-1">
-          <DollarSign size={16} />
-          <span>${booking.totalAmount.toFixed(2)}</span>
-        </div>
-      </div>
-
-      {booking.notes && (
-        <p className="text-sm text-gray-500 mt-2 italic">"{booking.notes}"</p>
-      )}
-    </div>
   )
 }

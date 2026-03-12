@@ -1,0 +1,522 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>By the Book — Studio Scheduling Platform</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --indigo:   #6366f1;
+      --violet:   #7c3aed;
+      --mint:     #34d399;
+      --orange:   #f97316;
+      --night950: #020617;
+      --night900: #0f172a;
+      --night800: #1e293b;
+      --night700: #334155;
+      --night500: #64748b;
+      --night400: #94a3b8;
+      --night200: #e2e8f0;
+      --white:    #ffffff;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background: var(--night950);
+      color: var(--white);
+      line-height: 1.5;
+    }
+
+    h1, h2, h3, h4 { font-family: 'Space Grotesk', sans-serif; }
+
+    /* ── Utilities ── */
+    .container { max-width: 1100px; margin: 0 auto; padding: 0 24px; }
+    .text-gradient {
+      background: linear-gradient(135deg, var(--indigo) 0%, var(--violet) 50%, var(--mint) 100%);
+      -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent;
+    }
+    .badge {
+      display: inline-flex; align-items: center; gap: 6px;
+      padding: 4px 12px; border-radius: 999px;
+      font-size: 12px; font-weight: 600; letter-spacing: .04em; text-transform: uppercase;
+      background: rgba(99,102,241,.15); color: var(--indigo); border: 1px solid rgba(99,102,241,.3);
+    }
+    .badge::before { content: ''; width: 6px; height: 6px; border-radius: 50%; background: var(--indigo); }
+    .btn {
+      display: inline-flex; align-items: center; gap: 8px; cursor: pointer;
+      padding: 12px 24px; border-radius: 12px; font-weight: 600; font-size: 15px;
+      text-decoration: none; transition: all .2s;
+    }
+    .btn-primary {
+      background: linear-gradient(135deg, var(--indigo), var(--violet));
+      color: #fff; border: none; box-shadow: 0 0 24px rgba(99,102,241,.35);
+    }
+    .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 0 40px rgba(99,102,241,.5); }
+    .btn-ghost {
+      background: rgba(255,255,255,.08); color: var(--white);
+      border: 1px solid rgba(255,255,255,.15);
+    }
+    .btn-ghost:hover { background: rgba(255,255,255,.15); }
+    .card {
+      background: var(--night900); border: 1px solid rgba(255,255,255,.07);
+      border-radius: 16px; padding: 24px; transition: all .2s;
+    }
+    .card:hover { border-color: rgba(99,102,241,.4); transform: translateY(-2px); }
+
+    /* ── Navbar ── */
+    nav {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+      backdrop-filter: blur(20px); background: rgba(2,6,23,.8);
+      border-bottom: 1px solid rgba(255,255,255,.08);
+      padding: 16px 0;
+    }
+    .nav-inner {
+      display: flex; align-items: center; justify-content: space-between;
+    }
+    .logo-wrap { display: flex; align-items: center; gap: 12px; text-decoration: none; color: #fff; }
+    .logo-img { width: 36px; height: 36px; object-fit: contain; }
+    .logo-text { font-family: 'Space Grotesk', sans-serif; font-weight: 700; font-size: 18px; }
+    .nav-links { display: flex; gap: 24px; list-style: none; }
+    .nav-links a { color: var(--night400); text-decoration: none; font-size: 14px; font-weight: 500; transition: color .2s; }
+    .nav-links a:hover { color: #fff; }
+    .nav-cta { display: flex; gap: 12px; align-items: center; }
+
+    /* ── Hero ── */
+    #hero {
+      padding: 160px 0 100px;
+      background: radial-gradient(ellipse 80% 50% at 50% -20%, rgba(99,102,241,.18), transparent);
+    }
+    #hero .eyebrow { text-align: center; margin-bottom: 20px; }
+    #hero h1 {
+      font-size: clamp(2.5rem, 6vw, 4.5rem);
+      font-weight: 800; line-height: 1.1;
+      text-align: center; margin-bottom: 24px;
+    }
+    #hero p {
+      color: var(--night400); font-size: 18px; text-align: center;
+      max-width: 560px; margin: 0 auto 40px;
+    }
+    #hero .hero-btns { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
+    .hero-logo-wrap {
+      width: 120px; height: 120px; margin: 0 auto 48px;
+      border-radius: 28px; overflow: hidden;
+      background: rgba(255,255,255,.04); border: 1px solid rgba(255,255,255,.1);
+      display: flex; align-items: center; justify-content: center;
+      animation: float 4s ease-in-out infinite;
+    }
+    .hero-logo-wrap img { width: 90px; height: 90px; object-fit: contain; }
+    @keyframes float {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-10px); }
+    }
+    .stats-strip {
+      display: flex; justify-content: center; gap: 48px; flex-wrap: wrap;
+      margin-top: 72px; padding-top: 40px;
+      border-top: 1px solid rgba(255,255,255,.07);
+    }
+    .stat { text-align: center; }
+    .stat-v { font-size: 2.25rem; font-weight: 800; font-family: 'Space Grotesk', sans-serif; }
+    .stat-l { font-size: 13px; color: var(--night500); margin-top: 4px; }
+
+    /* ── Features ── */
+    #features { padding: 100px 0; }
+    .section-badge { text-align: center; margin-bottom: 16px; }
+    .section-title { text-align: center; font-size: clamp(1.8rem, 4vw, 2.8rem); font-weight: 700; margin-bottom: 12px; }
+    .section-sub { text-align: center; color: var(--night400); margin-bottom: 56px; font-size: 16px; }
+    .features-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 20px; }
+    .feature-icon {
+      width: 44px; height: 44px; border-radius: 12px; margin-bottom: 16px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 22px; background: rgba(99,102,241,.15);
+    }
+    .feature-title { font-weight: 600; font-size: 16px; margin-bottom: 8px; }
+    .feature-desc { color: var(--night400); font-size: 14px; line-height: 1.6; }
+
+    /* ── Dashboard preview ── */
+    #demo { padding: 100px 0; background: radial-gradient(ellipse 60% 40% at 50% 50%, rgba(124,58,237,.08), transparent); }
+    .mockup {
+      background: var(--night900); border: 1px solid rgba(255,255,255,.1);
+      border-radius: 20px; overflow: hidden; margin-top: 48px;
+      box-shadow: 0 40px 80px rgba(0,0,0,.5);
+    }
+    .mockup-bar {
+      background: var(--night800); padding: 12px 16px;
+      display: flex; align-items: center; gap: 8px; border-bottom: 1px solid rgba(255,255,255,.07);
+    }
+    .dot { width: 10px; height: 10px; border-radius: 50%; }
+    .mockup-body { display: flex; min-height: 480px; }
+    .mockup-sidebar {
+      width: 200px; background: rgba(2,6,23,.6); border-right: 1px solid rgba(255,255,255,.07);
+      padding: 16px 12px; flex-shrink: 0;
+    }
+    .mockup-sidebar .logo-row {
+      display: flex; align-items: center; gap: 8px; margin-bottom: 24px; padding: 0 8px;
+    }
+    .mockup-sidebar .logo-row img { width: 28px; height: 28px; object-fit: contain; }
+    .mockup-sidebar .logo-row span { font-weight: 700; font-size: 13px; font-family: 'Space Grotesk', sans-serif; }
+    .sidebar-item {
+      display: flex; align-items: center; gap: 8px; padding: 8px 10px;
+      border-radius: 8px; font-size: 12px; color: var(--night400); margin-bottom: 2px;
+    }
+    .sidebar-item.active { background: rgba(99,102,241,.15); color: var(--indigo); }
+    .sidebar-item .si-dot { width: 14px; height: 14px; border-radius: 4px; flex-shrink: 0; }
+    .mockup-main { flex: 1; padding: 24px; }
+    .kpi-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-bottom: 20px; }
+    .kpi { background: rgba(255,255,255,.04); border: 1px solid rgba(255,255,255,.07); border-radius: 10px; padding: 14px; }
+    .kpi-v { font-size: 20px; font-weight: 700; font-family: 'Space Grotesk', sans-serif; margin-bottom: 4px; }
+    .kpi-l { font-size: 10px; color: var(--night500); }
+    .kpi-t { font-size: 10px; }
+    .chart-area {
+      background: rgba(255,255,255,.03); border: 1px solid rgba(255,255,255,.06);
+      border-radius: 10px; padding: 16px; min-height: 180px;
+      display: flex; align-items: flex-end; gap: 8px; overflow: hidden;
+    }
+    .chart-bar {
+      flex: 1; border-radius: 4px 4px 0 0; min-width: 0;
+      background: linear-gradient(180deg, var(--indigo), rgba(99,102,241,.3));
+    }
+
+    /* ── Workflow ── */
+    #workflow { padding: 100px 0; }
+    .steps { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 32px; position: relative; }
+    .step { text-align: center; }
+    .step-num {
+      width: 48px; height: 48px; border-radius: 14px; margin: 0 auto 16px;
+      display: flex; align-items: center; justify-content: center;
+      background: linear-gradient(135deg, var(--indigo), var(--violet));
+      font-weight: 800; font-size: 18px; font-family: 'Space Grotesk', sans-serif;
+    }
+    .step-title { font-weight: 600; font-size: 15px; margin-bottom: 8px; }
+    .step-desc { color: var(--night400); font-size: 13px; line-height: 1.6; }
+
+    /* ── Tech stack ── */
+    #stack { padding: 80px 0; }
+    .stack-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px; }
+    .stack-card {
+      background: rgba(255,255,255,.04); border: 1px solid rgba(255,255,255,.07);
+      border-radius: 12px; padding: 20px; text-align: center;
+    }
+    .stack-layer { font-size: 11px; text-transform: uppercase; letter-spacing: .08em; color: var(--indigo); font-weight: 600; margin-bottom: 8px; }
+    .stack-techs { color: var(--night300, #cbd5e1); font-size: 14px; }
+
+    /* ── CTA ── */
+    #cta {
+      padding: 100px 0; text-align: center;
+      background: radial-gradient(ellipse 60% 60% at 50% 50%, rgba(99,102,241,.12), transparent);
+    }
+    #cta h2 { font-size: clamp(2rem, 5vw, 3.5rem); font-weight: 800; margin-bottom: 16px; }
+    #cta p { color: var(--night400); max-width: 480px; margin: 0 auto 36px; }
+
+    /* ── Footer ── */
+    footer {
+      border-top: 1px solid rgba(255,255,255,.07);
+      padding: 40px 0; text-align: center; color: var(--night500); font-size: 13px;
+    }
+    footer .footer-logo { display: flex; align-items: center; justify-content: center; gap: 10px; margin-bottom: 12px; }
+    footer .footer-logo img { width: 28px; height: 28px; object-fit: contain; }
+    footer .footer-logo span { font-weight: 700; color: #fff; font-family: 'Space Grotesk', sans-serif; }
+
+    /* ── Responsive ── */
+    @media (max-width: 768px) {
+      .nav-links, .nav-cta { display: none; }
+      .mockup-sidebar { display: none; }
+      .kpi-row { grid-template-columns: 1fr 1fr; }
+      .stats-strip { gap: 28px; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ────────────────── NAV ────────────────── -->
+<nav>
+  <div class="container nav-inner">
+    <a href="#" class="logo-wrap">
+      <img src="../public/images/logo.png" alt="By the Book" class="logo-img" />
+      <span class="logo-text">By the Book</span>
+    </a>
+    <ul class="nav-links">
+      <li><a href="#features">Features</a></li>
+      <li><a href="#demo">Demo</a></li>
+      <li><a href="#workflow">Workflow</a></li>
+      <li><a href="#stack">Tech Stack</a></li>
+    </ul>
+    <div class="nav-cta">
+      <a href="#cta" class="btn btn-ghost" style="padding:10px 18px;font-size:14px;">Sign In</a>
+      <a href="#cta" class="btn btn-primary" style="padding:10px 18px;font-size:14px;">Get Started →</a>
+    </div>
+  </div>
+</nav>
+
+<!-- ────────────────── HERO ────────────────── -->
+<section id="hero">
+  <div class="container">
+    <div class="hero-logo-wrap">
+      <img src="../public/images/logo.png" alt="By the Book" />
+    </div>
+    <div class="eyebrow">
+      <span class="badge">Studio Management Platform</span>
+    </div>
+    <h1>
+      Run Your Studio<br />
+      <span class="text-gradient">By the Book.</span>
+    </h1>
+    <p>The all-in-one scheduling, payments, and analytics platform built for modern recording studios.</p>
+    <div class="hero-btns">
+      <a href="#demo" class="btn btn-primary">View Demo Dashboard →</a>
+      <a href="#features" class="btn btn-ghost">See Features</a>
+    </div>
+    <div class="stats-strip">
+      <div class="stat">
+        <div class="stat-v text-gradient">80%</div>
+        <div class="stat-l">Less Admin Time</div>
+      </div>
+      <div class="stat">
+        <div class="stat-v text-gradient">60%</div>
+        <div class="stat-l">Higher Utilization</div>
+      </div>
+      <div class="stat">
+        <div class="stat-v text-gradient">3×</div>
+        <div class="stat-l">Faster Payments</div>
+      </div>
+      <div class="stat">
+        <div class="stat-v text-gradient">99%</div>
+        <div class="stat-l">Uptime SLA</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ────────────────── FEATURES ────────────────── -->
+<section id="features">
+  <div class="container">
+    <div class="section-badge"><span class="badge">Features</span></div>
+    <h2 class="section-title">Everything your studio needs</h2>
+    <p class="section-sub">From booking to billing — one platform, zero friction.</p>
+    <div class="features-grid">
+      <div class="card">
+        <div class="feature-icon">🗓️</div>
+        <div class="feature-title">Smart Calendar</div>
+        <div class="feature-desc">Visual weekly view with color-coded rooms and drag-drop scheduling. Never double-book again.</div>
+      </div>
+      <div class="card">
+        <div class="feature-icon">💳</div>
+        <div class="feature-title">Stripe Payments</div>
+        <div class="feature-desc">Collect deposits, full payments, and refunds. Automatic invoicing via Stripe.</div>
+      </div>
+      <div class="card">
+        <div class="feature-icon">👥</div>
+        <div class="feature-title">Client CRM</div>
+        <div class="feature-desc">Profiles, session history, total spend, notes, and tags — your complete client database.</div>
+      </div>
+      <div class="card">
+        <div class="feature-icon">📊</div>
+        <div class="feature-title">Analytics & Heatmaps</div>
+        <div class="feature-desc">Revenue trends, room utilization heatmaps, peak hour analysis, and booking forecasts.</div>
+      </div>
+      <div class="card">
+        <div class="feature-icon">🏠</div>
+        <div class="feature-title">Room Management</div>
+        <div class="feature-desc">Track equipment, rates, availability, and maintenance for every room in your facility.</div>
+      </div>
+      <div class="card">
+        <div class="feature-icon">🤖</div>
+        <div class="feature-title">AI Session Predictor</div>
+        <div class="feature-desc">Predict session durations by genre, experience level, and crew size using ML insights.</div>
+      </div>
+      <div class="card">
+        <div class="feature-icon">🌍</div>
+        <div class="feature-title">Studio Marketplace</div>
+        <div class="feature-desc">List your studio for discovery. Let clients find and book you directly from the platform.</div>
+      </div>
+      <div class="card">
+        <div class="feature-icon">🔧</div>
+        <div class="feature-title">Equipment Inventory</div>
+        <div class="feature-desc">Track every mic, interface, and console. Monitor asset value and maintenance schedules.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ────────────────── DASHBOARD DEMO ────────────────── -->
+<section id="demo">
+  <div class="container">
+    <div class="section-badge"><span class="badge">Platform Demo</span></div>
+    <h2 class="section-title">Powerful dashboard, beautiful design</h2>
+    <p class="section-sub">Everything you need to run your studio at a glance.</p>
+
+    <div class="mockup">
+      <div class="mockup-bar">
+        <div class="dot" style="background:#ff5f57;"></div>
+        <div class="dot" style="background:#febc2e;"></div>
+        <div class="dot" style="background:#28c840;"></div>
+        <div style="flex:1;text-align:center;font-size:11px;color:var(--night500);">bythebook.studio/studio/dashboard</div>
+      </div>
+      <div class="mockup-body">
+        <!-- Sidebar -->
+        <div class="mockup-sidebar">
+          <div class="logo-row">
+            <img src="../public/images/logo.png" alt="Logo" />
+            <span>By the Book</span>
+          </div>
+          <div class="sidebar-item active">
+            <div class="si-dot" style="background:var(--indigo);border-radius:4px;"></div> Dashboard
+          </div>
+          <div class="sidebar-item"><div class="si-dot" style="background:var(--night700);"></div> Calendar</div>
+          <div class="sidebar-item"><div class="si-dot" style="background:var(--night700);"></div> Rooms</div>
+          <div class="sidebar-item"><div class="si-dot" style="background:var(--night700);"></div> Clients</div>
+          <div class="sidebar-item"><div class="si-dot" style="background:var(--night700);"></div> Equipment</div>
+          <div class="sidebar-item"><div class="si-dot" style="background:var(--night700);"></div> Payments</div>
+          <div class="sidebar-item"><div class="si-dot" style="background:var(--night700);"></div> Analytics</div>
+          <div class="sidebar-item"><div class="si-dot" style="background:var(--night700);"></div> Marketplace</div>
+          <div class="sidebar-item"><div class="si-dot" style="background:var(--night700);"></div> AI Predict</div>
+        </div>
+
+        <!-- Main content -->
+        <div class="mockup-main">
+          <div style="font-weight:700;font-size:18px;margin-bottom:16px;font-family:'Space Grotesk',sans-serif;">Good morning, SoundForge 👋</div>
+          <div class="kpi-row">
+            <div class="kpi">
+              <div class="kpi-v" style="color:var(--indigo);">$18,420</div>
+              <div class="kpi-l">Monthly Revenue</div>
+              <div class="kpi-t" style="color:var(--mint);">↑ 12%</div>
+            </div>
+            <div class="kpi">
+              <div class="kpi-v">47</div>
+              <div class="kpi-l">Bookings This Month</div>
+              <div class="kpi-t" style="color:var(--mint);">↑ 8%</div>
+            </div>
+            <div class="kpi">
+              <div class="kpi-v" style="color:var(--mint);">78%</div>
+              <div class="kpi-l">Avg Utilization</div>
+              <div class="kpi-t" style="color:var(--mint);">↑ 5%</div>
+            </div>
+            <div class="kpi">
+              <div class="kpi-v">$391</div>
+              <div class="kpi-l">Avg Session Value</div>
+              <div class="kpi-t" style="color:var(--orange);">↓ 2%</div>
+            </div>
+          </div>
+
+          <!-- Mini chart -->
+          <div style="font-size:11px;color:var(--night500);margin-bottom:8px;">Revenue — Last 12 Months</div>
+          <div class="chart-area">
+            <div class="chart-bar" style="height:60%;"></div>
+            <div class="chart-bar" style="height:45%;"></div>
+            <div class="chart-bar" style="height:70%;"></div>
+            <div class="chart-bar" style="height:55%;"></div>
+            <div class="chart-bar" style="height:80%;"></div>
+            <div class="chart-bar" style="height:65%;"></div>
+            <div class="chart-bar" style="height:90%;"></div>
+            <div class="chart-bar" style="height:75%;"></div>
+            <div class="chart-bar" style="height:100%;background:linear-gradient(180deg,var(--mint),rgba(52,211,153,.3));"></div>
+            <div class="chart-bar" style="height:88%;"></div>
+            <div class="chart-bar" style="height:95%;"></div>
+            <div class="chart-bar" style="height:92%;"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ────────────────── WORKFLOW ────────────────── -->
+<section id="workflow">
+  <div class="container">
+    <div class="section-badge"><span class="badge">How It Works</span></div>
+    <h2 class="section-title">From inquiry to invoice in minutes</h2>
+    <p class="section-sub">A streamlined workflow designed for busy studio operators.</p>
+    <div class="steps">
+      <div class="step">
+        <div class="step-num">1</div>
+        <div class="step-title">Client Discovers</div>
+        <div class="step-desc">Clients find your studio on the marketplace or via your direct booking link.</div>
+      </div>
+      <div class="step">
+        <div class="step-num">2</div>
+        <div class="step-title">Session Booked</div>
+        <div class="step-desc">Client selects room, date, and time. AI suggests optimal duration.</div>
+      </div>
+      <div class="step">
+        <div class="step-num">3</div>
+        <div class="step-title">Deposit Collected</div>
+        <div class="step-desc">Stripe collects the deposit automatically. No chasing payments.</div>
+      </div>
+      <div class="step">
+        <div class="step-num">4</div>
+        <div class="step-title">Reminders Sent</div>
+        <div class="step-desc">Automated email & SMS reminders 24 hours before the session.</div>
+      </div>
+      <div class="step">
+        <div class="step-num">5</div>
+        <div class="step-title">Session Complete</div>
+        <div class="step-desc">Balance charged, invoice sent, client added to your CRM automatically.</div>
+      </div>
+      <div class="step">
+        <div class="step-num">6</div>
+        <div class="step-title">Analytics Updated</div>
+        <div class="step-desc">Revenue, utilization, and client stats update in real-time on your dashboard.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ────────────────── TECH STACK ────────────────── -->
+<section id="stack">
+  <div class="container">
+    <div class="section-badge"><span class="badge">Technology</span></div>
+    <h2 class="section-title">Built with best-in-class tools</h2>
+    <p class="section-sub">Enterprise-grade stack, built for developers who care about quality.</p>
+    <div class="stack-grid">
+      <div class="stack-card">
+        <div class="stack-layer">Frontend</div>
+        <div class="stack-techs">Next.js · TypeScript · Tailwind CSS · Recharts</div>
+      </div>
+      <div class="stack-card">
+        <div class="stack-layer">Backend</div>
+        <div class="stack-techs">Node.js · tRPC · Prisma ORM · PostgreSQL</div>
+      </div>
+      <div class="stack-card">
+        <div class="stack-layer">Payments</div>
+        <div class="stack-techs">Stripe · Stripe Elements · Webhooks</div>
+      </div>
+      <div class="stack-card">
+        <div class="stack-layer">Auth & Security</div>
+        <div class="stack-techs">NextAuth.js · JWT · Rate Limiting · Zod Validation</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ────────────────── CTA ────────────────── -->
+<section id="cta">
+  <div class="container">
+    <div style="margin-bottom:24px;">
+      <img src="../public/images/logo.png" alt="By the Book" style="width:64px;height:64px;object-fit:contain;margin:0 auto;display:block;" />
+    </div>
+    <h2><span class="text-gradient">Ready to book smarter?</span></h2>
+    <p>Join studios across the country using By the Book to manage their business.</p>
+    <div style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap;">
+      <a href="https://github.com/Debalent/By-The-Book" target="_blank" rel="noopener" class="btn btn-ghost">View on GitHub</a>
+      <a href="mailto:balentinetechsolutions@gmail.com" class="btn btn-primary">Get in Touch →</a>
+    </div>
+  </div>
+</section>
+
+<!-- ────────────────── FOOTER ────────────────── -->
+<footer>
+  <div class="footer-logo">
+    <img src="../public/images/logo.png" alt="By the Book" />
+    <span>By the Book</span>
+  </div>
+  <p>Built by <a href="mailto:balentinetechsolutions@gmail.com" style="color:var(--indigo);text-decoration:none;">Balentine Tech Solutions</a> &nbsp;·&nbsp; © 2026 All rights reserved.</p>
+</footer>
+
+</body>
+</html>
