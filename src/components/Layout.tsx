@@ -59,8 +59,8 @@ export default function Layout({ children }: { children: React.ReactNode }) {
           <Image
             src="/images/logo.png"
             alt="By the Book"
-            width={36}
-            height={36}
+            width={56}
+            height={56}
             className="rounded-xl object-contain"
           />
           <div>

@@ -84,10 +84,10 @@ export default function BookSession() {
         {/* Top nav */}
         <nav className="border-b border-white/10 px-6 py-4 flex items-center justify-between">
           <Link href="/" className="flex items-center gap-3">
-            <div className="relative w-8 h-8">
+            <div className="relative w-12 h-12">
               <Image src="/images/logo.png" alt="By the Book" fill className="object-contain" />
             </div>
-            <span className="font-display font-bold text-lg">By the Book</span>
+            <span className="font-display font-bold text-xl">By the Book</span>
           </Link>
           <Link href="/" className="text-sm text-night-400 hover:text-white transition-colors">
             ← Back to home

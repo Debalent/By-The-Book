@@ -126,11 +126,11 @@ export default function Home() {
             <Image
               src="/images/logo.png"
               alt="By the Book"
-              width={36}
-              height={36}
+              width={52}
+              height={52}
               className="rounded-xl object-contain"
             />
-            <span className="font-display font-bold text-lg">By the Book</span>
+            <span className="font-display font-bold text-xl">By the Book</span>
           </div>
           <div className="flex-1" />
           <div className="hidden md:flex items-center gap-2">
@@ -180,8 +180,8 @@ export default function Home() {
                 <Image
                   src="/images/logo.png"
                   alt="By the Book"
-                  width={120}
-                  height={120}
+                  width={200}
+                  height={200}
                   className="relative rounded-3xl object-contain shadow-2xl"
                 />
               </div>
@@ -299,8 +299,8 @@ export default function Home() {
                 <Image
                   src="/images/logo.png"
                   alt="By the Book"
-                  width={64}
-                  height={64}
+                  width={100}
+                  height={100}
                   className="rounded-2xl object-contain mx-auto mb-6"
                 />
                 <h2 className="font-display text-4xl font-bold mb-4">
@@ -337,8 +337,8 @@ export default function Home() {
               <Image
                 src="/images/logo.png"
                 alt="By the Book"
-                width={28}
-                height={28}
+                width={44}
+                height={44}
                 className="rounded-lg object-contain"
               />
               <span className="font-display font-semibold text-night-300">By the Book</span>
